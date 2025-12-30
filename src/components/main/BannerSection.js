@@ -16,12 +16,12 @@ const banners = [
   { img: banner04, x: "50%"},
   { img: banner05, x: "35%"},
 ];
-const SLIDE_DURATION = 8000;
+const SLIDE_DURATION = 7000;
 const TRANSITION_TIME = 600;
 
 const BannerSection = () => {
   const [ current,  setCurrent ] = useState(0); //현재 슬라이드
-  const [ direction, setDirection ] = useState("unll"); //이동방향
+  const [ direction, setDirection ] = useState("null"); //이동방향
   const [ isAnimating, setIsAnimating ] = useState(false); //중복 클릭 방지
 
   const total = banners.length;
@@ -51,18 +51,28 @@ const handlePrev = ()=>{
 };
 
 // 자동 슬라이드
-useEffect(()=>{  
-  const interval = setInterval(()=>{
-    setDirection("right");
-    setIsAnimating(true);
+useEffect(() => {
+  // 첫 슬라이드는 유지하기 위해 delay
+  const startTimeout = setTimeout(() => {
+    const interval = setInterval(() => {
+      setDirection("right");
+      setIsAnimating(true);
 
-    setTimeout(()=>{
-      setCurrent((prev)=>(prev + 1 )% total);
-      setIsAnimating(false);
-    }, TRANSITION_TIME);
-  },SLIDE_DURATION);
-  return () => clearInterval(interval);
-},[]);
+      setTimeout(() => {
+        setCurrent(prev => (prev + 1) % total);
+        setDirection(null);        // 중요
+        setIsAnimating(false);
+      }, TRANSITION_TIME);
+
+    }, SLIDE_DURATION);
+
+    // interval 정리
+    return () => clearInterval(interval);
+  }, SLIDE_DURATION);
+
+  return () => clearTimeout(startTimeout);
+}, [total]);
+
 
 //렌더
 return(
@@ -71,7 +81,7 @@ return(
     <div
     className="banner-bg current"
     style={{
-      backgroundImage: `url(${banners[0].img})`,      
+      backgroundImage: `url(${banners[current].img})`,      
       backgroundPosition: banners[current].x,
     }}
     />

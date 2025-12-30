@@ -25,15 +25,17 @@
     }
 }
 
-.banner-bg.next{
+.banner-bg.current {
     z-index: 2;
     transform: translateX(0);
 }
 
-.banner-bg.current {
+.banner-bg.next{
     z-index: 1;
     transform: translateX(100%);
 }
+
+
 
 /* 오른쪽으로 슬라이드 */
 .banner.slide-right {
